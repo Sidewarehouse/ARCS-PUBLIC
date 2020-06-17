@@ -1,0 +1,164 @@
+ARCS EVENT LOG FILE
+DATE: Wed Jun 17 16:08:52 2020
+CTRLNAME: <TITLE: NOTITLE >
+ARCS_REVISION: REV.GNRL20061711
+
+CPU:TIME: FILE:LINE: MESSAGE
+0:0: ARCSeventlog.cc:36: PASSED
+0:0: ARCSassert.cc:31: PASSED
+0:0: ARCSprint.cc:26: PASSED
+0:0: ARCS.cc:57: PASSED
+0:0: ARCScommon.cc:43: CPUnum = 0
+0:15625: ARCScommon.cc:44: Policy = 2
+0:15625: ARCScommon.cc:45: FuncName_param.sched_priority = 62
+0:15625: ScreenParams.cc:41: PASSED
+0:15625: ../lib/CuiPlot.hh:93: PASSED
+0:15625: ../lib/FrameGraphics.hh:166: Could not open the frame buffer device. Trying to use a dummy buffer.
+0:31250: ../lib/CuiPlot.hh:93: PASSED
+0:31250: ../lib/CuiPlot.hh:93: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:31250: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: GraphPlot.cc:36: PASSED
+0:46875: ../lib/CuiPlot.hh:93: PASSED
+0:46875: ../lib/CuiPlot.hh:93: PASSED
+0:46875: ../lib/CuiPlot.hh:93: PASSED
+0:46875: ../lib/CuiPlot.hh:93: PASSED
+0:46875: GraphPlot.cc:49: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ../lib/RingBuffer.hh:59: PASSED
+0:46875: ARCSscreen.cc:50: PASSED
+0:46875: ARCScommon.cc:43: CPUnum = 0
+0:46875: ARCScommon.cc:44: Policy = 2
+0:46875: ARCScommon.cc:45: FuncName_param.sched_priority = 67
+0:46875: ARCScommon.cc:43: CPUnum = 0
+0:46875: ARCSscreen.cc:347: PASSED
+0:46875: ARCScommon.cc:44: Policy = 2
+0:62500: ARCScommon.cc:45: FuncName_param.sched_priority = 66
+0:62500: ARCScommon.cc:43: CPUnum = 0
+0:62500: ARCSassert.cc:166: Waiting for Emergency...
+0:62500: ARCScommon.cc:44: Policy = 2
+0:62500: ARCScommon.cc:45: FuncName_param.sched_priority = 65
+0:62500: ARCScommon.cc:43: CPUnum = 1
+1:62500: ARCSscreen.cc:437: PASSED
+0:62500: ARCScommon.cc:44: Policy = 2
+1:78125: ARCSscreen.cc:442: Waiting for PHAS_START,PHAS_EXIT...
+0:78125: ARCScommon.cc:45: FuncName_param.sched_priority = 64
+0:78125: ARCSscreen.cc:114: PASSED
+0:78125: DataMemory.cc:41: PASSED
+0:78125: DataMemory.cc:52: PASSED
+0:78125: ../src/InterfaceFunctions.hh:38: PASSED
+0:78125: ../src/ControlFunctions.hh:50: PASSED
+0:78125: ../src/ControlFunctions.hh:57: PASSED
+0:78125: ARCSthread.cc:39: PASSED
+0:78125: ../lib/SFthread.hh:120: PASSED
+0:78125: ../lib/SFthread.hh:122: INSERT_ZEROSLEEP MODE.
+3:78125: ../lib/SFthread.hh:336: Waiting for SFID_START,SFID_DSTRCT...
+0:78125: CPUSettings.cc:51: CPUnum = 3
+0:78125: CPUSettings.cc:52: Policy = 1
+0:78125: CPUSettings.cc:53: FuncName_param.sched_priority = 99
+0:78125: ../lib/SFthread.hh:443: Setting kernel parameters for WSL
+0:78125: ../lib/SFthread.hh:131: PASSED
+0:78125: ARCScommon.cc:43: CPUnum = 0
+0:78125: ARCSthread.cc:130: Waiting for ITS_START,ITS_DSTRCT...
+0:78125: ARCScommon.cc:44: Policy = 2
+0:78125: ARCScommon.cc:45: FuncName_param.sched_priority = 63
+0:78125: ARCSthread.cc:57: PASSED
+0:78125: ARCSscreen.cc:171: PASSED
+0:78125: ARCSscreen.cc:180: Waiting for PHAS_START,PHAS_EXIT...
+1:78125: ARCSscreen.cc:448: Waiting for PHAS_START,PHAS_EXIT...Done
+0:78125: ARCSscreen.cc:186: Waiting for PHAS_START,PHAS_EXIT...Done
+0:78125: ARCSscreen.cc:281: static_cast<int>(p->CmdPosition) = 2
+0:78125: ARCSscreen.cc:191: PASSED
+0:78125: ARCS.cc:69: PASSED
+0:78125: ARCSscreen.cc:333: Waiting for CommandStatus == ActualStatus...
+0:78125: ARCSthread.cc:136: Waiting for ITS_START,ITS_DSTRCT...Done
+0:78125: ARCSthread.cc:71: PASSED
+0:78125: ../lib/SFthread.hh:155: PASSED
+3:78125: ../lib/SFthread.hh:342: Waiting for SFID_START,SFID_DSTRCT...Done
+3:78125: ../lib/SFthread.hh:360: RealTimeThread Destructed.
+0:78125: ../lib/SFthread.hh:162: PASSED
+0:78125: ../src/ControlFunctions.hh:62: PASSED
+0:78125: ../src/InterfaceFunctions.hh:44: PASSED
+0:78125: DataMemory.cc:57: PASSED
+0:78125: ARCSscreen.cc:119: PASSED
+0:78125: ARCSscreen.cc:339: Waiting for CommandStatus == ActualStatus...Done
+0:78125: ARCSscreen.cc:395: PASSED
+0:93750: ARCSscreen.cc:134: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: GraphPlot.cc:54: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/RingBuffer.hh:74: PASSED
+0:93750: ../lib/CuiPlot.hh:107: PASSED
+0:93750: ../lib/CuiPlot.hh:107: PASSED
+0:93750: ../lib/CuiPlot.hh:107: PASSED
+0:93750: ../lib/CuiPlot.hh:107: PASSED
+0:93750: ../lib/CuiPlot.hh:107: PASSED
+0:93750: ../lib/CuiPlot.hh:107: PASSED
+0:93750: ../lib/CuiPlot.hh:107: PASSED
+0:93750: ScreenParams.cc:51: PASSED
+0:93750: ARCSprint.cc:31: PASSED
+0:93750: ARCSassert.cc:38: PASSED
+0:93750: ARCSeventlog.cc:41: PASSED
