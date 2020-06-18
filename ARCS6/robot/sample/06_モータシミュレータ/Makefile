@@ -1,5 +1,5 @@
 # ARCS6メイン用Makefile (サンプルコード用)
-# 2020/06/10 Yokokura, Yuki
+# 2020/06/17 Yokokura, Yuki
 
 # 最終的に出来上がる実行可能ファイルの名前
 EXENAME = ARCS
@@ -65,6 +65,26 @@ offline:
 	@echo "ARCS sys :" 
 	@cd $(SYSPATH); $(MAKE) --no-print-directory
 	@$(LD) $(LDFLAGS) -o $(EXENAME) $(ADDNAME) $(LIBNAME) $(SRCNAME) $(SYSNAME) $(LDFLAGS)
+	@rm -f $(SRCPATH)/ConstParams.cc $(SRCPATH)/ConstParams.hh $(SRCPATH)/ControlFunctions.cc $(SRCPATH)/InterfaceFunctions.hh
+	@cp $(SYSPATH)/ARCS.cc.def $(SYSPATH)/ARCS.cc
+
+# すべてコンパイル＆リンク (オフライン計算＋アセンブリリスト出力用)
+.PHONY: asmlist
+asmlist:
+	@echo "ARCS OFFLINE ASM LIST MODE :" 
+	@cp OfflineCalculations.cc $(SYSPATH)/ARCS.cc
+	@cp ConstParams.cc $(SRCPATH)/
+	@cp ConstParams.hh $(SRCPATH)/
+	@cp ControlFunctions.cc $(SRCPATH)/
+	@cp InterfaceFunctions.hh $(SRCPATH)/
+	@echo "ARCS addon :" 
+	@cd $(ADDPATH); $(MAKE) --no-print-directory asmlist
+	@echo "ARCS lib :" 
+	@cd $(LIBPATH); $(MAKE) --no-print-directory asmlist
+	@echo "ARCS src :" 
+	@cd $(SRCPATH); $(MAKE) --no-print-directory asmlist
+	@echo "ARCS sys :" 
+	@cd $(SYSPATH); $(MAKE) --no-print-directory asmlist
 	@rm -f $(SRCPATH)/ConstParams.cc $(SRCPATH)/ConstParams.hh $(SRCPATH)/ControlFunctions.cc $(SRCPATH)/InterfaceFunctions.hh
 	@cp $(SYSPATH)/ARCS.cc.def $(SYSPATH)/ARCS.cc
 
