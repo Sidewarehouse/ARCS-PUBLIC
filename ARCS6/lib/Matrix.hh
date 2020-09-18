@@ -1,6 +1,6 @@
 //! @file Matrix.hh
 //! @brief 行列/ベクトル計算クラス(テンプレート版)
-//! @date 2020/06/14
+//! @date 2020/09/09
 //! @author Yokokura, Yuki
 //
 // Copyright (C) 2011-2020 Yokokura, Yuki
@@ -837,7 +837,7 @@ class Matrix {
 			return y;
 		}
 		
-		//! @brief 指定した列を列ベクトルで上書きする関数
+		//! @brief 指定した列を縦ベクトルで上書きする関数
 		//! @param[in,out]	U	入出力行列
 		//! @param[in]	v	縦ベクトル
 		//! @param[in]	n	上書きしたい列
@@ -848,7 +848,7 @@ class Matrix {
 			for(size_t i=0;i<U.M;i++) U.Data[n-1][i] = v.Data[0][i];
 		}
 		
-		//! @brief 指定した列を列ベクトル(std::array)で上書きする関数
+		//! @brief 指定した列を縦ベクトル(std::array)で上書きする関数
 		//! @param[in,out]	U	入出力行列
 		//! @param[in]	v	縦ベクトル
 		//! @param[in]	n	上書きしたい列
@@ -884,6 +884,52 @@ class Matrix {
 			arcs_assert(m2 <= U.M);	// 行が高さ以内かチェック
 			arcs_assert(m1 <= m2);	// 開始行と終了行が入れ替わらないかチェック
 			for(size_t i=m1;i<=m2;i++) U.Data[n-1][i-1] = a;
+		}
+		
+		//! @brief 指定した列を縦ベクトルで指定位置に上書きする関数
+		//! @tparam	VM	縦ベクトルの長さ
+		//! @param[in,out]	U	入出力行列
+		//! @param[in]	v	縦ベクトル
+		//! @param[in]	n	上書きしたい列
+		//! @param[in]	m	縦方向の書き込む先頭位置
+		template <size_t VM>
+		constexpr friend void setvvector(Matrix<NN,MM,TT>& U, const Matrix<1,VM,TT>& v, size_t n, size_t m){
+			arcs_assert(0 < n && n <= NN);	// 指定した列が行列の幅以内かチェック
+			arcs_assert(VM + m - 1 <= MM);	// 縦ベクトルの下がハミ出ないかチェック
+			for(size_t i = 0; i < VM; ++i) U.Data[n-1][m-1+i] = v.Data[0][i];
+		}
+		
+		//! @brief 指定した列から縦ベクトルを指定位置から抽出する関数
+		//! @tparam	VM	縦ベクトルの長さ
+		//! @param[in]	U	入力行列
+		//! @param[in]	n	読み込みたい列
+		//! @param[in]	m	縦方向の読み込む先頭位置
+		//! @param[out]	抽出した縦ベクトル
+		template <size_t VM>
+		constexpr friend void getvvector(const Matrix<NN,MM,TT>& U, size_t n, size_t m, Matrix<1,VM,TT>& v){
+			arcs_assert(0 < n && n <= NN);	// 指定した列が行列の幅以内かチェック
+			arcs_assert(VM + m - 1 <= MM);	// 縦ベクトルの下がハミ出ないかチェック
+			for(size_t i = 0; i < VM; ++i) v.Data[0][i] = U.Data[n-1][m-1+i];
+		}
+		
+		//! @brief 行列から指定位置の小行列を抽出する関数
+		//! @tparam	SN	小行列の幅
+		//! @tparam	SM	小行列の高さ
+		//! @param[in]	U	入力行列
+		//! @param[in]	n	抽出する横位置（小行列の左）
+		//! @param[in]	m	抽出する縦位置（小行列の上）
+		//! @param[out]	Y	抽出した小行列
+		template <size_t SN, size_t SM>
+		constexpr friend void getsubmatrix(const Matrix<NN,MM,TT>& U, size_t n, size_t m, Matrix<SN,SM,TT>& Y){
+			static_assert(SN <= NN);		// 小行列の方が幅が小さいかチェック
+			static_assert(SM <= MM);		// 小行列の方が高さが小さいかチェック
+			arcs_assert(SN + n - 1 <= NN);	// 右側がハミ出ないかチェック
+			arcs_assert(SM + m - 1 <= MM);	// 下側がハミ出ないかチェック
+			Matrix<1,SM> v;
+			for(size_t i = 1; i <= SN; ++i){
+				getvvector(U, i + n - 1, m, v);
+				setcolumn(Y, v, i);
+			}
 		}
 		
 		//! @brief 並び替え記憶列ベクトルvの行番号に従って，入力行列Uの行を並び替える関数
@@ -1278,39 +1324,84 @@ class Matrix {
 			return {U, S, V};	// タプルで返す
 		}
 		
-		//! @brief Ax = bの形の線形連立1次方程式をxについて解く関数
+		//! @brief Ax = bの形の線形連立1次方程式をxについて解く関数(引数で返す版)
+		//! @param[in]	A	係数行列
+		//! @param[in]	b	係数ベクトル
+		//! @param[out]	x	解ベクトル
+		constexpr friend void solve(const Matrix& A, const Matrix<1,MM,TT>& b, Matrix<1,NN,TT>& x){
+			static_assert(A.N == A.M, "Matrix Size Error");				// Aが正方行列かチェック
+			static_assert(b.M == A.M, "Matrix and Vector Size Error");	// Aの高さとbの高さが同じかチェック
+			static_assert(b.N == 1, "Input is NOT vector.");			// bは縦ベクトルかチェック
+			
+			if constexpr(MM == 1){
+				// スカラーの場合
+				x[1] = b[1]/A.GetElement(1,1);	// スカラーのときはそのまま単純に除算
+			}else{
+				// 行列の場合
+				// Ax = b において A をLU分解すると，(LU)x = b になって L(Ux) = b と表現できることを利用する。
+				Matrix<A.N,A.N,TT> L, U;
+				Matrix<1,A.N,TT> d, bb;
+				Matrix<1,A.N,int> v;
+				TT buff = 0;
+				LU(A, L, U, v);		// まず，LU分解(並べ替え有り)してから，Ux = d と勝手に置き換えて考える。
+				bb = orderrow(b, v);// bベクトルも並べ替える
+				// その次に Ld = b の方を d について解いて，
+				// (下記では，Lの対角要素が1となるLU分解がなされているものとして計算する)
+				d.Data[0][0] = bb.Data[0][0];
+				for(size_t i = 1; i < A.N; ++i){
+					for(size_t j = 0; j <= i - 1; ++j) buff += L.Data[j][i]*d.Data[0][j];
+					d.Data[0][i] = (bb.Data[0][i] - buff);
+					buff = 0;
+				}
+				// さらに Ux = d を x について解く。
+				x.Data[0][A.N-1] = d.Data[0][A.N-1]/U.Data[A.N-1][A.N-1];
+				for(int k = A.N - 2; 0 <= k; --k){
+					for(size_t j = (size_t)k + 1; j < A.N; ++j){
+						buff += U.Data[j][k]*x.Data[0][j];
+					}
+					x.Data[0][k] = (d.Data[0][k] - buff)/U.Data[k][k];
+					buff = 0;
+				}
+			}
+		}
+		
+		//! @brief Ax = bの形の線形連立1次方程式をxについて解く関数(戻り値として返す版)
 		//! @param[in]	A	係数行列
 		//! @param[in]	b	係数ベクトル
 		//! @return	解ベクトル
 		constexpr friend Matrix<1,MM,TT> solve(const Matrix& A, const Matrix<1,MM,TT>& b){
-			static_assert(A.N == A.M, "Matrix Size Error");				// Aが正方行列かチェック
-			static_assert(b.M == A.M, "Matrix and Vector Size Error");	// Aの高さとbの高さが同じかチェック
+			Matrix<1,A.N,TT> x;
+			solve(A, b, x);
+			return x;		// 最終的な答えのxベクトルを返す
+		}
+		
+		//! @brief Uは上三角行列で，Ux = bの形の線形連立1次方程式をxについて解く関数(引数で返す版)
+		//! @param[in]	U	係数行列(上三角行列)
+		//! @param[in]	b	係数ベクトル
+		//! @param[out]	x	解ベクトル
+		constexpr friend void solve_upper_tri(const Matrix& U, const Matrix<1,MM,TT>& b, Matrix<1,NN,TT>& x){
+			static_assert(U.N == U.M, "Matrix Size Error");				// Uが正方行列かチェック
+			static_assert(b.M == U.M, "Matrix and Vector Size Error");	// Uの高さとbの高さが同じかチェック
 			static_assert(b.N == 1, "Input is NOT vector.");			// bは縦ベクトルかチェック
-			Matrix<A.N,A.N,TT> L, U;
-			Matrix<1,A.N,TT> d, x, bb;
-			Matrix<1,A.N,int> v;
-			TT buff = 0;
-			// Ax = b において A をLU分解すると，(LU)x = b になって L(Ux) = b と表現できることを利用する。
-			LU(A, L, U, v);		// まず，LU分解(並べ替え有り)してから，Ux = d と勝手に置き換えて考える。
-			bb = orderrow(b, v);// bベクトルも並べ替える
-			// その次に Ld = b の方を d について解いて，
-			// (下記では，Lの対角要素が1となるLU分解がなされているものとして計算する)
-			d.Data[0][0] = bb.Data[0][0];
-			for(size_t i = 1; i < A.N; ++i){
-				for(size_t j = 0; j <= i - 1; ++j) buff += L.Data[j][i]*d.Data[0][j];
-				d.Data[0][i] = (bb.Data[0][i] - buff);
-				buff = 0;
-			}
-			// さらに Ux = d を x について解く。
-			x.Data[0][A.N-1] = d.Data[0][A.N-1]/U.Data[A.N-1][A.N-1];
-			for(int k = A.N - 2; 0 <= k; --k){
-				for(size_t j = (size_t)k + 1; j < A.N; ++j){
-					buff += U.Data[j][k]*x.Data[0][j];
+			
+			if constexpr(MM == 1){
+				// スカラーの場合
+				x[1] = b[1]/U.GetElement(1,1);	// スカラーのときはそのまま単純に除算
+			}else{
+				// 行列の場合
+				Matrix<1,U.N,int> v;
+				TT buff = 0;
+				// 既にUは上三角行列なのでLU分解は不要
+				// Ux = b を x について解く。
+				x.Data[0][U.N-1] = b.Data[0][U.N-1]/U.Data[U.N-1][U.N-1];
+				for(int k = U.N - 2; 0 <= k; --k){
+					for(size_t j = (size_t)k + 1; j < U.N; ++j){
+						buff += U.Data[j][k]*x.Data[0][j];
+					}
+					x.Data[0][k] = (b.Data[0][k] - buff)/U.Data[k][k];
+					buff = 0;
 				}
-				x.Data[0][k] = (d.Data[0][k] - buff)/U.Data[k][k];
-				buff = 0;
 			}
-			return x;	// 最終的な答えのxベクトルを返す
 		}
 		
 		//! @brief 行列式の値を返す関数
@@ -1336,12 +1427,37 @@ class Matrix {
 		//! @return	結果
 		constexpr friend Matrix inv(const Matrix& A){
 			static_assert(A.N == A.M, "Matrix Size Error");	// Aが正方行列かチェック
-			Matrix I = Matrix<A.N,A.N,TT>::ident();	// 単位行列の生成
+			Matrix I = Matrix<A.N,A.N,TT>::ident();			// 単位行列の生成
 			Matrix<1,A.N,TT> x, b;
 			Matrix<A.N,A.N,TT> Ainv;
 			for(size_t n = 1; n <= A.N; ++n){
 				b = getcolumn(I, n);	// 単位行列のn列目を切り出してbベクトルとする
-				x = solve(A, b);		// Ax=bの連立1次方程式をxについて解く
+				solve(A, b, x);			// Ax = b の連立1次方程式をxについて解く
+				setcolumn(Ainv, x, n);	// xはAの逆行列のn列目となるので、Ainvのn列目にxを書き込む
+			}
+			return Ainv;	// 最終的に得られる逆行列を返す
+		}
+		
+		//! @brief 逆行列を返す関数 (正則チェック無し, 左上小行列のサイズ指定版)
+		//! @param[in]	A	入力行列 (kより右と下は全部ゼロ埋めを想定)
+		//! @param[in]	k	左上小行列のサイズ
+		//! @return	結果
+		constexpr friend Matrix inv(const Matrix& A, size_t k){
+			arcs_assert(k <= A.N);					// kが範囲内かチェック
+			Matrix I = Matrix<A.N,A.N,TT>::ident();	// 単位行列の生成
+			
+			// 正則にするためにk列より右下の対角成分を「1」にする
+			Matrix<A.N,A.N,TT> A2 = A;
+			for(size_t j = k + 1; j <= A.N; ++j){
+				A2.SetElement(j, j, 1);
+			}
+			
+			// k列までの逆行列を計算
+			Matrix<1,A.N,TT> x, b;
+			Matrix<A.N,A.N,TT> Ainv;
+			for(size_t n = 1; n <= k; ++n){
+				b = getcolumn(I, n);	// 単位行列のn列目を切り出してbベクトルとする
+				solve(A2, b, x);		// Ax = b の連立1次方程式をxについて解く
 				setcolumn(Ainv, x, n);	// xはAの逆行列のn列目となるので、Ainvのn列目にxを書き込む
 			}
 			return Ainv;	// 最終的に得られる逆行列を返す
@@ -1352,8 +1468,51 @@ class Matrix {
 		//! @return	結果
 		constexpr friend Matrix inv_with_check(const Matrix& A){
 			static_assert(A.N == A.M, "Matrix Size Error");	// Aが正方行列かチェック
-			arcs_assert(A.epsilon < fabs(det(A)));			// 正則かチェック
+			arcs_assert(A.epsilon < std::abs(det(A)));		// 正則かチェック
 			return inv(A);	// 最終的に得られる逆行列を返す
+		}
+		
+		//! @brief 上三角行列の逆行列を返す関数
+		//! @param[in]	U	入力行列(上三角行列)
+		//! @param[out]	Uinv	逆行列
+		constexpr friend void inv_upper_tri(const Matrix& U, Matrix& Uinv){
+			static_assert(U.N == U.M, "Matrix Size Error");			// Uが正方行列かチェック
+			static_assert(Uinv.N == Uinv.M, "Matrix Size Error");	// Uinvが正方行列かチェック
+			static_assert(U.N == Uinv.N, "Matrix Size Error");		// UとUinvが同じサイズかチェック
+			Matrix I = Matrix<U.N,U.N,TT>::ident();			// 単位行列の生成
+			Matrix<1,U.N,TT> x, b;
+			for(size_t n = 1; n <= U.N; ++n){
+				b = getcolumn(I, n);		// 単位行列のn列目を切り出してbベクトルとする
+				solve_upper_tri(U, b, x);	// Ux = b の連立1次方程式をxについて解く
+				setcolumn(Uinv, x, n);		// xはUの逆行列のn列目となるので、Uinvのn列目にxを書き込む
+			}
+			// Uinvが最終的に得られる逆行列
+		}
+		
+		//! @brief 上三角行列の逆行列を返す関数(左上小行列のサイズ指定版)
+		//! @param[in]	U	入力行列(上三角行列, kより右と下は全部ゼロ埋めを想定)
+		//! @param[in]	k	左上小行列のサイズ
+		//! @param[out]	Uinv	逆行列
+		constexpr friend void inv_upper_tri(const Matrix& U, size_t k, Matrix& Uinv){
+			static_assert(U.N == U.M, "Matrix Size Error");			// Uが正方行列かチェック
+			static_assert(Uinv.N == Uinv.M, "Matrix Size Error");	// Uinvが正方行列かチェック
+			static_assert(U.N == Uinv.N, "Matrix Size Error");		// UとUinvが同じサイズかチェック
+			Matrix I = Matrix<U.N,U.N,TT>::ident();			// 単位行列の生成
+			
+			// 正則にするためにk列より右下の対角成分を「1」にする
+			Matrix<U.N,U.N,TT> U2 = U;
+			for(size_t j = k + 1; j <= U.N; ++j){
+				U2.SetElement(j, j, 1);
+			}
+			
+			// k列までの逆行列を計算
+			Matrix<1,U.N,TT> x, b;
+			for(size_t n = 1; n <= k; ++n){
+				b = getcolumn(I, n);		// 単位行列のn列目を切り出してbベクトルとする
+				solve_upper_tri(U2, b, x);	// Ux = b の連立1次方程式をxについて解く
+				setcolumn(Uinv, x, n);		// xはUの逆行列のn列目となるので、Uinvのn列目にxを書き込む
+			}
+			// Uinvが最終的に得られる逆行列
 		}
 		
 		//! @brief 左擬似逆行列を返す関数 (Aが縦長行列の場合)
@@ -1363,13 +1522,33 @@ class Matrix {
 			static_assert(A.N < A.M, "Matrix Size Error");	// 縦長行列かチェック
 			return inv(tp(A)*A)*tp(A);
 		}
-
+		
+		//! @brief 左擬似逆行列を返す関数 (Aが縦長行列の場合, 左上小行列のサイズ指定版)
+		//! @param[in]	A	入力行列 (kより右と下は全部ゼロ埋めを想定)
+		//! @param[in]	k	左上小行列のサイズ
+		//! @return	結果
+		constexpr friend Matrix<MM,NN,TT> lpinv(const Matrix& A, size_t k){
+			Matrix<MM,NN> At = tp(A);
+			Matrix<NN,NN> A2 = At*A;
+			return inv(A2, k)*At;
+		}
+		
 		//! @brief 右擬似逆行列を返す関数 (Aが横長行列の場合)
 		//! @param[in]	A	入力行列
 		//! @return	結果
 		constexpr friend Matrix<MM,NN,TT> rpinv(const Matrix& A){
 			static_assert(A.M < A.N, "Matrix Size Error");	// 横長行列かチェック
 			return tp(A)*inv(A*tp(A));
+		}
+		
+		//! @brief 右擬似逆行列を返す関数 (Aが横長行列の場合, 左上小行列のサイズ指定版)
+		//! @param[in]	A	入力行列 (kより右と下は全部ゼロ埋めを想定)
+		//! @param[in]	k	左上小行列のサイズ
+		//! @return	結果
+		constexpr friend Matrix<MM,NN,TT> rpinv(const Matrix& A, size_t k){
+			Matrix<MM,NN> At = tp(A);
+			Matrix<MM,MM> A2 = A*At;
+			return At*inv(A2, k);
 		}
 		
 		//! @brief 行列指数関数 e^(U)
@@ -1616,16 +1795,13 @@ class Matrix {
 			return diag(A);	// Aの対角要素が固有値
 		}
 		
-		//! @brief 固有ベクトルを纏めた行列を返す関数 (実装途中)
+		//! @brief 最大固有値の固有ベクトルを返す関数
 		//! @param[in]	U	入力行列
 		//! @return	結果
-		constexpr friend Matrix<NN,NN,std::complex<double>> eigenvec(const Matrix<NN,MM,TT>& U){
+		constexpr friend Matrix<1,NN,std::complex<double>> eigenvec(const Matrix<NN,MM,TT>& U){
 			static_assert(NN == MM, "Matrix Size Error");	// 正方行列のみ対応
 			constexpr size_t LoopMax = 100*std::max(NN,MM);	// ループ打ち切り最大回数
-			constexpr auto I = Matrix<NN,NN,std::complex<double>>::eye();	// 単位行列
-			const Matrix<1,NN,std::complex<double>> lambda = eigen(U);		// 固有値を計算
-			Matrix<NN,NN,std::complex<double>> A, B, V;
-			Matrix<1,NN,std::complex<double>> v;
+			Matrix<NN,NN,std::complex<double>> A;
 			
 			if constexpr(std::is_same_v<TT, std::complex<double>>){
 				// 入力が複素数型の場合
@@ -1635,15 +1811,15 @@ class Matrix {
 				A.real(U);
 			}
 			
-			// 逆反復法による固有ベクトル計算
+			// べき乗法による固有ベクトル計算
+			auto x = Matrix<1,NN,std::complex<double>>::ones();
+			auto y = Matrix<1,NN,std::complex<double>>::ones();
 			for(size_t k = 1; k < LoopMax; ++k){
-				B = A - lambda[1]*I;
-				//v = inv(B)*v;	← LU分解の複素数対応をしないといけない
-				PrintMat(B);
-				PrintMat(v);
+				y = A*x;
+				x = y/euclidnorm(y);
 			}
 			
-			return V;
+			return x;
 		}
 		
 	private:

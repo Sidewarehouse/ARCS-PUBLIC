@@ -1,6 +1,6 @@
 //! @file OfflineCalculations.cc
 //! @brief ARCS6 オフライン計算用メインコード
-//! @date 2020/06/14
+//! @date 2020/09/09
 //! @author Yokokura, Yuki
 //!
 //! @par オフライン計算用のメインコード
@@ -228,6 +228,22 @@ int main(void){
 	PrintMat(D);
 	fillcolumn(D, 3.14, 1, 1, 2);
 	PrintMat(D);
+	Matrix<6,6> D2 = {
+		 1,  2,  3,  4,  5,  6,
+		 7,  8,  9, 10, 11, 12,
+		13, 14, 15, 16, 17, 18,
+		19, 20, 21, 22, 23, 24,
+		25, 26, 27, 28, 29, 30,
+		31, 32, 33, 34, 35, 36
+	};
+	setvvector(D2, getcolumn(D, 1), 2, 4);
+	PrintMatrix(D2, "%6.2f");
+	Matrix<1,3> vD2;
+	getvvector(D2, 2, 4, vD2);
+	PrintMat(vD2);
+	Matrix<3,3> sD2;
+	getsubmatrix(D2, 2, 4, sD2);
+	PrintMat(sD2);
 	
 	// 並び替え系関数のテスト
 	printf("\n◆ 並び替えのテスト\n");
@@ -418,15 +434,92 @@ int main(void){
 	);
 	PrintMat(A);
 	PrintMat(b);
+	Matrix<1,3> xslv;
+	solve(A, b, xslv);
+	PrintMat(xslv);
 	PrintMat(solve(A, b));
-
+	
+	// 上三角行列の連立方程式の球解テスト
+	printf("\n◆ 上三角行列の連立方程式の球解テスト\n");
+	Matrix<3,3> Auptri = {
+		1, 3, 6,
+		0, 2, 7,
+		0, 0,-4
+	};
+	solve_upper_tri(Auptri, b, xslv);
+	PrintMat(Auptri);
+	PrintMat(xslv);
+	
 	// 行列式と逆行列のテスト
 	printf("\n◆ 行列式と逆行列のテスト\n");
 	printf("det(A) = %f\n", det(A));
 	PrintMatrix(inv(A), "% 16.14e");
 	PrintMatrix(inv_with_check(A), "% 16.14e");
+	
+	// 左上小行列の逆行列のテスト
+	printf("\n◆ 左上小行列の逆行列のテスト\n");
+	Matrix<5,5> Ai5 = {
+		1,  1,  1,  0,  0,
+		2,  3, -2,  0,  0,
+		3, -1,  1,  0,  0,
+		0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0
+	};
+	PrintMat(Ai5);
+	PrintMatrix(inv(Ai5, 3), "% 16.14e");
+	
+	// 上三角行列の逆行列のテスト
+	printf("\n◆ 上三角行列の逆行列のテスト\n");
+	Matrix<3,3> Auptri_inv;
+	inv_upper_tri(Auptri, Auptri_inv);
+	PrintMat(Auptri_inv);
+	
+	// 上三角行列で左上小行列の逆行列のテスト
+	printf("\n◆ 上三角行列で左上小行列の逆行列のテスト\n");
+	Matrix<4,4> Auptri2 = {
+		1, 3, 6, 0,
+		0, 2, 7, 0,
+		0, 0,-4, 0,
+		0, 0, 0, 0
+	};
+	Matrix<4,4> Auptri_inv2;
+	PrintMat(Auptri2);
+	inv_upper_tri(Auptri2, 3, Auptri_inv2);
+	PrintMat(Auptri_inv2);
+	
+	// 疑似逆行列のテスト
+	printf("\n◆ 疑似逆行列のテスト\n");
 	PrintMatrix(lpinv(D), "% 16.14e");
 	PrintMatrix(rpinv(tp(D)), "% 16.14e");
+	Matrix<1,2> Dpinv = {
+		1,
+		2
+	};
+	PrintMatrix(lpinv(Dpinv), "% 16.14e");
+	PrintMatrix(rpinv(tp(Dpinv)), "% 16.14e");
+	
+	// 左上小行列の疑似逆行列のテスト
+	printf("\n◆ 左上小行列の疑似逆行列のテスト\n");
+	Matrix<4,5> Dpinv45 = {
+		1,  0,  0,  0,
+		2,  0,  0,  0,
+		0,  0,  0,  0,
+		0,  0,  0,  0,
+		0,  0,  0,  0,
+	};
+	PrintMat(Dpinv45);
+	PrintMatrix(lpinv(Dpinv45, 1), "% 16.14e");
+	PrintMatrix(rpinv(tp(Dpinv45), 1), "% 16.14e");
+	Dpinv45.Set(
+		1,  1,  0,  0,
+		2,  3,  0,  0,
+		3, -1,  0,  0,
+		0,  0,  0,  0,
+		0,  0,  0,  0
+	);
+	PrintMat(Dpinv45);
+	PrintMatrix(lpinv(Dpinv45, 2), "% 16.14e");
+	PrintMatrix(rpinv(tp(Dpinv45), 2), "% 16.14e");
 	
 	// 行列指数関数のテスト
 	printf("\n◆ 行列指数関数のテスト\n");
@@ -572,6 +665,7 @@ int main(void){
 	};
 	PrintMat(Aeig);
 	PrintMat(eigen(Aeig));
+	PrintMat(eigenvec(Aeig));
 	
 	// 固有値計算のテスト2(複素数固有値の場合)
 	printf("◆ 固有値計算のテスト2(複素数固有値の場合)\n");
@@ -582,7 +676,7 @@ int main(void){
 	);
 	PrintMat(Aeig);
 	PrintMat(eigen(Aeig));
-	//PrintMat(eigenvec(Aeig)); (実装中)
+	PrintMat(eigenvec(Aeig));
 	
 	// 2乗のコンパイル時定数演算のテスト
 	printf("\n◆ 2乗のコンパイル時定数演算のテスト\n");
@@ -628,20 +722,17 @@ int main(void){
 	PrintMat(Vxsvd);
 	PrintMat(Uxsvd*Sxsvd*tp(Vxsvd));	// 元に戻るかチェック
 	
-	/*
-	constexpr Matrix<3,3> Aqrx = {
-		2, -2, 18,
-		2,  1,  0,
-		1,  2,  0
+	// 行列のランクのコンパイル時定数演算のテスト
+	printf("\n◆ 行列のランクのコンパイル時定数演算のテスト\n");
+	constexpr Matrix<3,3> Ark = {
+		 2,  0,  2,
+		 0,  1,  0,
+		 0,  0,  0
 	};
-	Matrix<3,3> Qqrx, Rqrx;
-	QR(Aqrx, Qqrx, Rqrx);
-	PrintMatrix(Aqr, "% 8.3f");
-	PrintMatrix(Qqr, "% 8.3f");
-	PrintMatrix(Rqr, "% 8.3f");
-	PrintMatrix(tp(Qqr)*Qqr, "% 8.3f");
-	PrintMatrix(Qqr*Rqr, "% 8.3f");
-	*/
+	constexpr size_t RankOfArk = rank(Ark);
+	PrintMat(Ark);
+	printf("rank(Ark) = %zu\n", RankOfArk);
+	static_assert(rank(Ark) == 2);
 	
 	return EXIT_SUCCESS;	// 正常終了
 }

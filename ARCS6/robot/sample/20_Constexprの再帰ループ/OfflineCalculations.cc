@@ -1,6 +1,6 @@
 //! @file OfflineCalculations.cc
 //! @brief ARCS6 オフライン計算用メインコード
-//! @date 2020/05/03
+//! @date 2020/08/26
 //! @author Yokokura, Yuki
 //!
 //! @par オフライン計算用のメインコード
@@ -19,13 +19,21 @@
 #include <cstdlib>
 #include <cassert>
 #include <array>
+#include <complex>
+#include <iostream>
 
 // 追加のARCSライブラリをここに記述
 #include "Matrix.hh"
 #include "CsvManipulator.hh"
-#include "CurrencyDatasets.hh"
 
 using namespace ARCS;
+
+template <std::size_t ... Is>
+auto iterate(std::index_sequence<Is...> const &){
+	return std::make_tuple(Matrix<1,Is+1>{}...);
+}
+
+void PrintMatrices
 
 //! @brief エントリポイント
 //! @return 終了ステータス
@@ -33,10 +41,14 @@ int main(void){
 	printf("ARCS OFFLINE CALCULATION MODE\n");
 	
 	// ここにオフライン計算のコードを記述
-	// USDJPY為替データ
-	CurrencyDatasets<28751,1> USDJPY("USDJPY1902.csv", "USDJPY1902time.csv");	
-	USDJPY.DispCurrencyData(1000);
-	USDJPY.WritePngCurrencyPlot(108, 112, "USDJPY1902.png");
+	
+	auto matrices {
+		iterate(std::make_index_sequence<3>{})
+	};
+	
+	PrintMat(std::get<0>(matrices));
+	PrintMat(std::get<1>(matrices));
+	PrintMat(std::get<2>(matrices));
 	
 	return EXIT_SUCCESS;	// 正常終了
 }
