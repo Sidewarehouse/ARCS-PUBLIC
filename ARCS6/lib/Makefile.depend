@@ -79,6 +79,7 @@ MovingAverage.o: MovingAverage.cc MovingAverage.hh RingBuffer.hh \
 NotchFilter.o: NotchFilter.cc NotchFilter.hh
 Observer.o: Observer.cc Observer.hh Matrix.hh ../sys/ARCSassert.hh \
  StateSpaceSystem.hh Matrix.hh Discret.hh ../sys/ARCSeventlog.hh
+PCI-2826CV.o: PCI-2826CV.cc PCI-2826CV.hh ../sys/ARCSeventlog.hh
 PCI-3133.o: PCI-3133.cc PCI-3133.hh ../sys/ARCSeventlog.hh
 PCI-3180.o: PCI-3180.cc PCI-3180.hh ../sys/ARCSeventlog.hh
 PCI-3340.o: PCI-3340.cc PCI-3340.hh ../sys/ARCSeventlog.hh
@@ -128,6 +129,10 @@ Statistics.o: Statistics.cc Statistics.hh Matrix.hh ../sys/ARCSassert.hh \
 StepWave.o: StepWave.cc StepWave.hh ../sys/ARCSassert.hh \
  ../sys/ARCSeventlog.hh
 TimeDelay.o: TimeDelay.cc TimeDelay.hh
+TimeSeriesDatasets.o: TimeSeriesDatasets.cc TimeSeriesDatasets.hh \
+ Matrix.hh ../sys/ARCSassert.hh BatchProcessor.hh ../sys/ARCSeventlog.hh \
+ CsvManipulator.hh FrameGraphics.hh FrameFontSmall.hh CuiPlot.hh \
+ RingBuffer.hh
 TransferFunction.o: TransferFunction.cc TransferFunction.hh Matrix.hh \
  ../sys/ARCSassert.hh StateSpaceSystem.hh Discret.hh \
  ../sys/ARCSeventlog.hh
