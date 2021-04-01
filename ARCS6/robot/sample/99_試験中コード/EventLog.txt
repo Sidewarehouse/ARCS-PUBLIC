@@ -1,8 +1,0 @@
-0:15625: ../lib/CurrencyDatasets.hh:65: PASSED
-0:15625: ../lib/CsvManipulator.hh:245: Checking CSV File Read Error of USDJPY1902value.csv...
-0:15625: ../lib/CsvManipulator.hh:247: Checking CSV File Read Error of USDJPY1902value.csv...Done
-0:15625: ../lib/CsvManipulator.hh:245: Checking CSV File Read Error of USDJPY1902time.csv...
-0:15625: ../lib/CsvManipulator.hh:247: Checking CSV File Read Error of USDJPY1902time.csv...Done
-0:31250: ../lib/CuiPlot.hh:93: PASSED
-0:46875: ../lib/CuiPlot.hh:107: PASSED
-0:46875: ../lib/CurrencyDatasets.hh:82: PASSED

@@ -1,9 +1,9 @@
 //! @file Matrix.hh
 //! @brief 行列/ベクトル計算クラス(テンプレート版)
-//! @date 2020/09/09
+//! @date 2021/04/01
 //! @author Yokokura, Yuki
 //
-// Copyright (C) 2011-2020 Yokokura, Yuki
+// Copyright (C) 2011-2021 Yokokura, Yuki
 // This program is free software;
 // you can redistribute it and/or modify it under the terms of the BSD License.
 // For details, see the License.txt file.
@@ -111,7 +111,7 @@ class Matrix {
 		//! @brief 行列代入演算子
 		//! @param[in] right 演算子の右側
 		//! @return 結果
-		constexpr auto& operator=(const auto& right){
+		constexpr auto& operator=(const Matrix& right){
 			static_assert(this->N == right.N, "Matrix Size Error");	// 行列のサイズチェック
 			static_assert(this->M == right.M, "Matrix Size Error");	// 行列のサイズチェック
 			for(size_t i = 0; i < N; ++i){
