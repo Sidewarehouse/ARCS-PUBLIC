@@ -32,7 +32,7 @@ all:
 	@cp -p ConstParams.hh $(SRCPATH)/
 	@cp -p ControlFunctions.cc $(SRCPATH)/
 	@cp -p InterfaceFunctions.hh $(SRCPATH)/
-	@echo "ARCS addon :"
+	@echo "ARCS addon :" 
 	@cd $(ADDPATH); $(MAKE) --no-print-directory
 	@echo "ARCS lib :"
 	@cd $(LIBPATH); $(MAKE) --no-print-directory
@@ -46,26 +46,26 @@ all:
 # カーネルモジュールのみをコンパイル＆リンク
 .PHONY: mod
 mod:
-	@echo -n "ARCS KERNEL MOD COMPILE MODE :"
+	@echo -n "ARCS KERNEL MOD COMPILE MODE :" 
 	@echo -n -e "ARCS mod : \n" 
 	@cd ../../../mod; $(MAKE) --no-print-directory
 
 # すべてコンパイル＆リンク (オフライン計算用)
 .PHONY: offline
 offline:
-	@echo "ARCS OFFLINE CALCULATION MODE :"
+	@echo "ARCS OFFLINE CALCULATION MODE :" 
 	@cp OfflineCalculations.cc $(SYSPATH)/ARCS.cc
 	@cp -p ConstParams.cc $(SRCPATH)/
 	@cp -p ConstParams.hh $(SRCPATH)/
 	@cp -p ControlFunctions.cc $(SRCPATH)/
 	@cp -p InterfaceFunctions.hh $(SRCPATH)/
-	@echo "ARCS addon :"
+	@echo "ARCS addon :" 
 	@cd $(ADDPATH); $(MAKE) --no-print-directory
-	@echo "ARCS lib :"
+	@echo "ARCS lib :" 
 	@cd $(LIBPATH); $(MAKE) --no-print-directory
-	@echo "ARCS src :"
+	@echo "ARCS src :" 
 	@cd $(SRCPATH); $(MAKE) --no-print-directory
-	@echo "ARCS sys :"
+	@echo "ARCS sys :" 
 	@cd $(SYSPATH); $(MAKE) --no-print-directory
 	@$(LD) $(LDFLAGS) -o $(EXENAME) $(ADDNAME) $(LIBNAME) $(SRCNAME) $(SYSNAME) $(LDFLAGS)
 	@rm -f $(SRCPATH)/ConstParams.cc $(SRCPATH)/ConstParams.hh $(SRCPATH)/ControlFunctions.cc $(SRCPATH)/InterfaceFunctions.hh
@@ -74,19 +74,19 @@ offline:
 # すべてコンパイル＆リンク (オフライン計算＋アセンブリリスト出力用)
 .PHONY: asmlist
 asmlist:
-	@echo "ARCS OFFLINE ASM LIST MODE :"
+	@echo "ARCS OFFLINE ASM LIST MODE :" 
 	@cp OfflineCalculations.cc $(SYSPATH)/ARCS.cc
 	@cp -p ConstParams.cc $(SRCPATH)/
 	@cp -p ConstParams.hh $(SRCPATH)/
 	@cp -p ControlFunctions.cc $(SRCPATH)/
 	@cp -p InterfaceFunctions.hh $(SRCPATH)/
-	@echo "ARCS addon :"
+	@echo "ARCS addon :" 
 	@cd $(ADDPATH); $(MAKE) --no-print-directory asmlist
-	@echo "ARCS lib :"
+	@echo "ARCS lib :" 
 	@cd $(LIBPATH); $(MAKE) --no-print-directory asmlist
-	@echo "ARCS src :"
+	@echo "ARCS src :" 
 	@cd $(SRCPATH); $(MAKE) --no-print-directory asmlist
-	@echo "ARCS sys :"
+	@echo "ARCS sys :" 
 	@cd $(SYSPATH); $(MAKE) --no-print-directory asmlist
 	@rm -f $(SRCPATH)/ConstParams.cc $(SRCPATH)/ConstParams.hh $(SRCPATH)/ControlFunctions.cc $(SRCPATH)/InterfaceFunctions.hh
 	@cp $(SYSPATH)/ARCS.cc.def $(SYSPATH)/ARCS.cc
@@ -126,7 +126,7 @@ dep:
 # デバッグ
 .PHONY: debug
 debug:
-	@echo "ARCS GDB DEBUG MODE :"
+	@echo "ARCS GDB DEBUG MODE :" 
 	@$(MAKE) --no-print-directory clean -C $(ADDPATH)
 	@$(MAKE) --no-print-directory clean -C $(LIBPATH)
 	@$(MAKE) --no-print-directory clean -C $(SRCPATH)

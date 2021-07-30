@@ -27,7 +27,9 @@ using namespace ARCS;
 namespace {
 	// スレッド間で共有したい変数をここに記述
 	std::array<double, ConstParams::ACTUATOR_NUM> PositionRes = {0};	//!< [rad] 位置応答
-	std::array<double, ConstParams::ACTUATOR_NUM> CurrentRef = {0};		//!< [Nm]  電流指令
+	std::array<double, ConstParams::ACTUATOR_NUM> VelocityRes = {0};	//!< [rad/s] 速度応答
+	std::array<double, ConstParams::ACTUATOR_NUM> TorqueRes = {0};		//!< [Nm] トルク応答
+	std::array<double, ConstParams::ACTUATOR_NUM> CurrentRef = {0};		//!< [A]  電流指令
 }
 
 //! @brief 制御用周期実行関数1
@@ -51,18 +53,22 @@ bool ControlFunctions::ControlFunction1(double t, double Tact, double Tcmp){
 	if(CmdFlag == CTRL_LOOP){
 		// 周期モード (ここは制御周期 SAMPLING_TIME[0] 毎に呼び出される(リアルタイム空間なので処理は制御周期内に収めること))
 		// リアルタイム制御ここから
-		Interface.GetPosition(PositionRes);	// [rad] 位置応答の取得
-		Screen.GetOnlineSetVar();			// オンライン設定変数の読み込み
+		Interface.GetPositionAndVelocity(PositionRes,VelocityRes);	// [rad] 位置と速度応答の取得
+		Interface.GetTorque(TorqueRes);	// [Nm]  トルク応答の取得
+		Screen.GetOnlineSetVar();		// オンライン設定変数の読み込み
 		
 		// ここに制御アルゴリズムを記述する
+		CurrentRef[0] =  0.9*sin(2.0*M_PI*0.25*t);	// [A] 1軸目電流指令
+		CurrentRef[1] =  0.9*sin(2.0*M_PI*0.25*t);	// [A] 2軸目電流指令
+		CurrentRef[2] =  0.2*sin(2.0*M_PI*0.25*t);	// [A] 3軸目電流指令
 		
 		Interface.SetCurrent(CurrentRef);	// [A] 電流指令の出力
-		Screen.SetVarIndicator(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);	// 任意変数インジケータ(変数0, ..., 変数9)
+		Screen.SetVarIndicator(VelocityRes[0], VelocityRes[1], VelocityRes[2], TorqueRes[0], TorqueRes[1], TorqueRes[2], 0, 0, 0, 0);	// 任意変数インジケータ(変数0, ..., 変数9)
 		Graph.SetTime(Tact, t);									// [s] グラフ描画用の周期と時刻のセット
-		Graph.SetVars(0, 0, 0, 0, 0, 0, 0, 0, 0);	// グラフプロット0 (グラフ番号, 変数0, ..., 変数7)
-		Graph.SetVars(1, 0, 0, 0, 0, 0, 0, 0, 0);	// グラフプロット1 (グラフ番号, 変数0, ..., 変数7)
-		Graph.SetVars(2, 0, 0, 0, 0, 0, 0, 0, 0);	// グラフプロット2 (グラフ番号, 変数0, ..., 変数7)
-		Graph.SetVars(3, 0, 0, 0, 0, 0, 0, 0, 0);	// グラフプロット3 (グラフ番号, 変数0, ..., 変数7)
+		Graph.SetVars(0, CurrentRef[0], CurrentRef[1], CurrentRef[2], 0, 0, 0, 0, 0);	// グラフプロット0 (グラフ番号, 変数0, ..., 変数7)
+		Graph.SetVars(1, PositionRes[0], PositionRes[1], PositionRes[2], 0, 0, 0, 0, 0);// グラフプロット1 (グラフ番号, 変数0, ..., 変数7)
+		Graph.SetVars(2, VelocityRes[0], VelocityRes[1], VelocityRes[2], 0, 0, 0, 0, 0);// グラフプロット2 (グラフ番号, 変数0, ..., 変数7)
+		Graph.SetVars(3, TorqueRes[0], TorqueRes[1], TorqueRes[2], 0, 0, 0, 0, 0);	// グラフプロット3 (グラフ番号, 変数0, ..., 変数7)
 		Memory.SetData(Tact, t, 0, 0, 0, 0, 0, 0, 0, 0, 0);		// CSVデータ保存変数 (周期, A列, B列, ..., J列)
 		// リアルタイム制御ここまで
 	}
@@ -81,7 +87,7 @@ bool ControlFunctions::ControlFunction1(double t, double Tact, double Tcmp){
 //! @return		クロックオーバーライドフラグ (true = リアルタイムループ, false = 非リアルタイムループ)
 bool ControlFunctions::ControlFunction2(double t, double Tact, double Tcmp){
 	// 制御用定数宣言
-	[[maybe_unused]] constexpr double Ts = ConstParams::SAMPLING_TIME[1]*1e-9;	// [s]	制御周期
+	[[maybe_unused]] const double Ts = ConstParams::SAMPLING_TIME[1]*1e-9;	// [s]	制御周期
 	
 	// 制御用変数宣言
 	
@@ -109,7 +115,7 @@ bool ControlFunctions::ControlFunction2(double t, double Tact, double Tcmp){
 //! @return		クロックオーバーライドフラグ (true = リアルタイムループ, false = 非リアルタイムループ)
 bool ControlFunctions::ControlFunction3(double t, double Tact, double Tcmp){
 	// 制御用定数宣言
-	[[maybe_unused]] constexpr double Ts = ConstParams::SAMPLING_TIME[2]*1e-9;	// [s]	制御周期
+	[[maybe_unused]] const double Ts = ConstParams::SAMPLING_TIME[2]*1e-9;	// [s]	制御周期
 	
 	// 制御用変数宣言
 	

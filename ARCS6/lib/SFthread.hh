@@ -3,10 +3,10 @@
 //!
 //! pthreadのSCHED_FIFOで実時間スレッドを生成＆管理＆破棄する。実際に計測された制御周期や計算消費時間も提供する。
 //!
-//! @date 2020/04/15
+//! @date 2021/07/08
 //! @author Yokokura, Yuki
 //
-// Copyright (C) 2011-2020 Yokokura, Yuki
+// Copyright (C) 2011-2021 Yokokura, Yuki
 // This program is free software;
 // you can redistribute it and/or modify it under the terms of the FreeBSD License.
 // For details, see the License.txt file.
@@ -447,8 +447,9 @@ class SFthread {
 			// x86_64系の場合
 			#ifdef __x86_64__
 				EventLog("Setting kernel parameters for x86_64");
-				LinuxCommander::Execute("/bin/echo -1 > /proc/sys/kernel/sched_rt_runtime_us");			// CFSを無効
-				LinuxCommander::Execute("/bin/echo 2147483647 > /proc/sys/kernel/sched_rt_period_us");	// リアルタイムタスク割り当て時間を最大化
+				// 下記は実験的なカーネルパラメータ(様子見中)
+				//LinuxCommander::Execute("/bin/echo -1 > /proc/sys/kernel/sched_rt_runtime_us");			// CFSを無効
+				//LinuxCommander::Execute("/bin/echo 2147483647 > /proc/sys/kernel/sched_rt_period_us");	// リアルタイムタスク割り当て時間を最大化
 				if constexpr(SFA == SFalgorithm::WITHOUT_ZEROSLEEP){
 					LinuxCommander::Execute("/bin/echo 0 > /proc/sys/kernel/watchdog");					// 「BUG: soft lockup」警告防止
 				}
@@ -474,7 +475,8 @@ class SFthread {
 			
 			// x86_64系の場合
 			#ifdef __x86_64__
-				LinuxCommander::Execute("/bin/echo 1000000 > /proc/sys/kernel/sched_rt_period_us");	// リアルタイムタスク割り当て時間を元に戻す
+				// 下記は実験的なカーネルパラメータ(様子見中)
+				//LinuxCommander::Execute("/bin/echo 1000000 > /proc/sys/kernel/sched_rt_period_us");	// リアルタイムタスク割り当て時間を元に戻す
 			#endif
 			
 			// ARM系の場合

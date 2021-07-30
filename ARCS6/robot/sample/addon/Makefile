@@ -1,5 +1,5 @@
 # ARCS6 サブディレクトリアドオン用Makefile
-# 2020/06/10
+# 2021/07/31
 
 # 最終的に出来上がる中間ファイルの名前
 OBJNAME = ARCS_ADDON.o
@@ -20,7 +20,7 @@ CC = gcc
 LD = ld
 
 # コンパイラに渡すオプション
-CFLAGS  = -Wall -Weffc++ -std=c++17 -ftree-vectorize -march=native -DARCS_IN
+CFLAGS  = -Wall -Weffc++ -std=c++17 -ftree-vectorize -march=native -fPIE -DARCS_IN
 
 # リンカに渡すオプション
 LDFLAGS = -L.

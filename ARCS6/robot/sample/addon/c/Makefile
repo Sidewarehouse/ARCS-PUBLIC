@@ -1,5 +1,5 @@
 # ARCS6 サブディレクトリC言語アドオン用Makefile
-# 2020/06/10
+# 2021/07/31
 
 # 最終的に出来上がる中間ファイルの名前
 OBJNAME = ARCS_ADDONC.o
@@ -20,7 +20,7 @@ CC = gcc
 LD = ld
 
 # コンパイラに渡すオプション
-CFLAGS  = -Wall -march=native
+CFLAGS  = -Wall -march=native -fPIE
 
 # リンカに渡すオプション
 LDFLAGS = -L.

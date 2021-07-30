@@ -20,6 +20,8 @@
 
 // 追加のARCSライブラリをここに記述
 #include "Matrix.hh"
+#include "Limiter.hh"
+#include "../robot/ZFA01/addon/ZFA01.hh"
 
 using namespace ARCS;
 
@@ -27,6 +29,8 @@ using namespace ARCS;
 namespace {
 	// スレッド間で共有したい変数をここに記述
 	std::array<double, ConstParams::ACTUATOR_NUM> PositionRes = {0};	//!< [rad] 位置応答
+	std::array<double, ConstParams::ACTUATOR_NUM> VelocityRes = {0};	//!< [rad/s] 速度応答
+	std::array<double, ConstParams::ACTUATOR_NUM> TorqueRes = {0};		//!< [Nm] トルク応答
 	std::array<double, ConstParams::ACTUATOR_NUM> CurrentRef = {0};		//!< [Nm]  電流指令
 }
 
@@ -40,6 +44,10 @@ bool ControlFunctions::ControlFunction1(double t, double Tact, double Tcmp){
 	[[maybe_unused]] constexpr double Ts = ConstParams::SAMPLING_TIME[0]*1e-9;	// [s]	制御周期
 	
 	// 制御用変数宣言
+	static Matrix<1,ZFA01::N_AX> thetam;	// [rad] モータ側位置
+	static Matrix<1,ZFA01::N_AX> omegam;	// [rad/s] モータ側速度
+	static Matrix<1,ZFA01::N_AX> taus;		// [Nm] ねじれトルク
+	static Matrix<1,ZFA01::N_AX> iq_ref;	// [A] q軸電流指令
 	
 	if(CmdFlag == CTRL_INIT){
 		// 初期化モード (ここは制御開始時/再開時に1度だけ呼び出される(非リアルタイム空間なので重い処理もOK))
@@ -51,18 +59,31 @@ bool ControlFunctions::ControlFunction1(double t, double Tact, double Tcmp){
 	if(CmdFlag == CTRL_LOOP){
 		// 周期モード (ここは制御周期 SAMPLING_TIME[0] 毎に呼び出される(リアルタイム空間なので処理は制御周期内に収めること))
 		// リアルタイム制御ここから
-		Interface.GetPosition(PositionRes);	// [rad] 位置応答の取得
+		Interface.GetPositionAndVelocity(PositionRes, VelocityRes);	// [rad,rad/s] 位置と速度応答の取得
+		Interface.GetTorque(TorqueRes);		// [Nm] ねじれトルク応答の取得
 		Screen.GetOnlineSetVar();			// オンライン設定変数の読み込み
 		
+		// センサ系データ取得＆縦ベクトルとして読み込み
+		thetam.LoadArray(PositionRes);
+		omegam.LoadArray(VelocityRes);
+		taus.LoadArray(TorqueRes);
+		
 		// ここに制御アルゴリズムを記述する
+		iq_ref[1] =  1.4*sin(2.0*M_PI*0.25*t);	// [A] 1S電流指令
+		iq_ref[2] =  1.4*sin(2.0*M_PI*0.25*t);	// [A] 2L電流指令
+		iq_ref[3] =  0.3*sin(2.0*M_PI*0.25*t);	// [A] 3U電流指令
+		
+		// 安全系と電流指令設定
+		Limiter<ZFA01::N_AX>(iq_ref, ZFA01::iq_max);// [A] q軸電流リミッタ
+		iq_ref.StoreArray(CurrentRef);				// [A] 最終的な全軸の電流指令
 		
 		Interface.SetCurrent(CurrentRef);	// [A] 電流指令の出力
 		Screen.SetVarIndicator(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);	// 任意変数インジケータ(変数0, ..., 変数9)
 		Graph.SetTime(Tact, t);									// [s] グラフ描画用の周期と時刻のセット
-		Graph.SetVars(0, 0, 0, 0, 0, 0, 0, 0, 0);	// グラフプロット0 (グラフ番号, 変数0, ..., 変数7)
-		Graph.SetVars(1, 0, 0, 0, 0, 0, 0, 0, 0);	// グラフプロット1 (グラフ番号, 変数0, ..., 変数7)
-		Graph.SetVars(2, 0, 0, 0, 0, 0, 0, 0, 0);	// グラフプロット2 (グラフ番号, 変数0, ..., 変数7)
-		Graph.SetVars(3, 0, 0, 0, 0, 0, 0, 0, 0);	// グラフプロット3 (グラフ番号, 変数0, ..., 変数7)
+		Graph.SetVars(0, iq_ref[1], iq_ref[2], iq_ref[3], 0, 0, 0, 0, 0);	// グラフプロット0 (グラフ番号, 変数0, ..., 変数7)
+		Graph.SetVars(1, thetam[1], thetam[2], thetam[3], 0, 0, 0, 0, 0);	// グラフプロット1 (グラフ番号, 変数0, ..., 変数7)
+		Graph.SetVars(2, omegam[1], omegam[2], omegam[3], 0, 0, 0, 0, 0);	// グラフプロット2 (グラフ番号, 変数0, ..., 変数7)
+		Graph.SetVars(3, taus[1], taus[2], taus[3], 0, 0, 0, 0, 0);			// グラフプロット3 (グラフ番号, 変数0, ..., 変数7)
 		Memory.SetData(Tact, t, 0, 0, 0, 0, 0, 0, 0, 0, 0);		// CSVデータ保存変数 (周期, A列, B列, ..., J列)
 		// リアルタイム制御ここまで
 	}
@@ -81,7 +102,7 @@ bool ControlFunctions::ControlFunction1(double t, double Tact, double Tcmp){
 //! @return		クロックオーバーライドフラグ (true = リアルタイムループ, false = 非リアルタイムループ)
 bool ControlFunctions::ControlFunction2(double t, double Tact, double Tcmp){
 	// 制御用定数宣言
-	[[maybe_unused]] constexpr double Ts = ConstParams::SAMPLING_TIME[1]*1e-9;	// [s]	制御周期
+	[[maybe_unused]] const double Ts = ConstParams::SAMPLING_TIME[1]*1e-9;	// [s]	制御周期
 	
 	// 制御用変数宣言
 	
@@ -109,7 +130,7 @@ bool ControlFunctions::ControlFunction2(double t, double Tact, double Tcmp){
 //! @return		クロックオーバーライドフラグ (true = リアルタイムループ, false = 非リアルタイムループ)
 bool ControlFunctions::ControlFunction3(double t, double Tact, double Tcmp){
 	// 制御用定数宣言
-	[[maybe_unused]] constexpr double Ts = ConstParams::SAMPLING_TIME[2]*1e-9;	// [s]	制御周期
+	[[maybe_unused]] const double Ts = ConstParams::SAMPLING_TIME[2]*1e-9;	// [s]	制御周期
 	
 	// 制御用変数宣言
 	

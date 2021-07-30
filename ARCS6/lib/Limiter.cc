@@ -33,4 +33,3 @@ double ARCS::Limiter(const double input, const double pos_limit, const double ne
 	if(input < neg_limit) ret = neg_limit;	// 任意の数値で入力を制限して出力
 	return ret;
 }
-

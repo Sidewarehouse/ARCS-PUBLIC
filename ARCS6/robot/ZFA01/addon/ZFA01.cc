@@ -1,18 +1,18 @@
-//! @file ClassBase.cc
-//! @brief クラスベースコード
+//! @file ZFA01.cc
+//! @brief Zero Force Arm 01 - ZFA01クラス
 //!
-//! クラス(非テンプレート版)を追加する場合は，このクラスベースコードを基に作ってネ。
+//! ZFA01ロボット制御のためのクラス
 //!
-//! @date 20XX/XX/XX
+//! @date 2021/07/30
 //! @author Yokokura, Yuki
 //
-// Copyright (C) 2011-20XX Yokokura, Yuki
+// Copyright (C) 2011-2021 Yokokura, Yuki
 // This program is free software;
 // you can redistribute it and/or modify it under the terms of the FreeBSD License.
 // For details, see the License.txt file.
 
 #include <cassert>
-#include "ClassBase.hh"
+#include "ZFA01.hh"
 
 // ARCS組込み用マクロ
 #ifdef ARCS_IN
@@ -30,7 +30,7 @@
 using namespace ARCS;
 
 //! @brief コンストラクタ
-ClassBase::ClassBase()
+ZFA01::ZFA01()
 	// :
 {
 	
@@ -38,14 +38,14 @@ ClassBase::ClassBase()
 
 //! @brief ムーブコンストラクタ
 //! @param[in]	r	右辺値
-ClassBase::ClassBase(ClassBase&& r)
+ZFA01::ZFA01(ZFA01&& r)
 	// :
 {
 	
 }
 
 //! @brief デストラクタ
-ClassBase::~ClassBase(){
+ZFA01::~ZFA01(){
 	
 }
 

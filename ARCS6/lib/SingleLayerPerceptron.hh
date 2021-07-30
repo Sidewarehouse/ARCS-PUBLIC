@@ -3,10 +3,10 @@
 //!
 //! 1層のパーセプトロンレイヤ
 //!
-//! @date 2020/05/17
+//! @date 2021/06/22
 //! @author Yokokura, Yuki
 //
-// Copyright (C) 2011-2020 Yokokura, Yuki
+// Copyright (C) 2011-2021 Yokokura, Yuki
 // This program is free software;
 // you can redistribute it and/or modify it under the terms of the FreeBSD License.
 // For details, see the License.txt file.
@@ -370,6 +370,8 @@ class SingleLayerPerceptron {
 	private:
 		SingleLayerPerceptron(const SingleLayerPerceptron&) = delete;					//!< コピーコンストラクタ使用禁止
 		const SingleLayerPerceptron& operator=(const SingleLayerPerceptron&) = delete;	//!< 代入演算子使用禁止
+	
+	protected:
 		Matrix<1,P> u;		//!< 状態ベクトル
 		Matrix<M,P> U;		//!< 状態行列
 		Matrix<N,P> W;		//!< 重み行列
